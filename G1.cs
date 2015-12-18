@@ -8,6 +8,7 @@ namespace grafi
 {  
     class G1
     {
+        public delegate void Showarray(bool[] message);
         public delegate void Showmessage(string message);
         const int max = 1000;
        public class V
@@ -103,7 +104,6 @@ namespace grafi
         }
         Matrix[] ar = new Matrix[max];
         Node Nv = new Node();
-        int i=0 , k, j;
         private bool vivod=true; 
         private Node add(V v1, V v2,int w,string label)
         {
@@ -306,9 +306,53 @@ namespace grafi
             }
             method(string.Format("Вес {0}-смежной вершине дуги: {1}", i, k.w));
         }
-        public void Worshall(V v1, V v2, Showmessage method)
+        public void Worshall(Showmessage method)
         {
-            dawdad
+            Node tmp = Nv;
+            Node k = Nv;
+            int i = 0; int ii = 0;
+            int jj = 0;
+            while (k != null)
+            {
+                i++;
+                k = k.next;
+            }
+            bool[,] A= new bool [i,i];
+            while (tmp != null)
+            {
+              
+                Node t = ar[tmp.num].H;
+                while (t != null)
+                { jj=0;
+                    Node tmp1 = Nv;
+                    while (tmp1.num != t.num)
+                    {
+                        tmp1 = tmp1.next;
+                        ++jj;
+                    }
+                    if (tmp1 != null)
+                    {
+                        A[ii, jj] = true;
+                    }
+                    t = t.next;
+                }
+                tmp = tmp.next;
+                ++ii;
+            }
+            for (int k1 = 0; k1 <= i; ++k1)
+            {
+                for (int i1 = 0; i1 <= i; ++i1)
+                {
+                    for (int j1 = 0; j1 <= i; ++j1)
+                    {
+                        if (A[j1, i1] == false)
+                        {
+                            A[j1, i1]=(A[j1, k1] && A[k1, i1]);
+                        }
+                    }
+                }
+            }
+
         }
         }
     }
