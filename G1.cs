@@ -204,7 +204,7 @@ namespace grafi
             int ii = 1;
             Node k = Nv;
             Node tmp = null;
-            while ((v.num != Nv.num)&&(k!=null))
+            while ((v.num != k.num)&&(k!=null))
             {
                 tmp = k;
                 k = k.next;
@@ -260,7 +260,7 @@ namespace grafi
         public void XLABEL(V v1, V v2,Showmessage method)
         {
         Node p = ar[v1.num].H;
-        if (v1.num != 0)
+        if (ar[v1.num].v.num != 0)
         {
             while ((p.num != v2.num) && (p != null))
             {
@@ -298,14 +298,16 @@ namespace grafi
         }
         public void XDELETE(V v1, V v2, Showmessage method)
         {
+            int ii = 1;
             Node s = ar[v1.num].H;
             Node tmp = new Node();
-            if (v1.num != 0)
+            if (ar[v1.num].v.num != 0)
             {
                 while ((s != null) && (s.num != v2.num))
                 {
                     tmp = s;
                     s = s.next;
+                    ++ii;
                 }
                 if (s == null)
                 {
@@ -314,9 +316,18 @@ namespace grafi
                 }
                 else
                 {
-                    tmp.next = s.next;
-                    method("Дуга удалена");
-                    return;
+                    if (ii != 1)
+                    {
+                        tmp.next = s.next;
+                        method("Дуга удалена");
+                        return;
+                    }
+                    else 
+                    {
+                        ar[v1.num].H = s.next;
+                        method("Дуга удалена");
+                        return;
+                    }
                 }
             }
         }
