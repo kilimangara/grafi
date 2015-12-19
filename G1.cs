@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace grafi
-{  
+{
+    public delegate void Showarray(bool[,] message);
+    public delegate void Showmessage(string message);
     class G1
     {
-        public delegate void Showarray(bool[] message);
-        public delegate void Showmessage(string message);
         const int max = 1000;
-       public class V
+      public struct V
         {
             private int _num;
             private string _label;
@@ -94,25 +94,28 @@ namespace grafi
             public string label;
             public int num;
             public int w;
-            public Node next=new Node();
+            public Node next;
         }
        private struct Matrix
         {
-            public Node H=new Node();
+           public Node H ;
             public V v;
           
         }
-        Matrix[] ar = new Matrix[max];
-        Node Nv = new Node();
-        private bool vivod=true; 
+       Matrix[] ar = new Matrix[max];
+        Node Nv = null;
+       static public int i = 0;
         private Node add(V v1, V v2,int w,string label)
         {
+            int ii = 1;
             bool h = false;
             Node last = new Node();
             Node k = new Node();
+            Node prev = new Node();
             last.num = v2.num;
             last.w = w;
             last.label = label;
+            last.next = null;
             if (ar[v1.num].H == null) return last;
             else
             {
@@ -121,24 +124,44 @@ namespace grafi
                 {
                     if (k.num > last.num)
                     {
-                        last.next = k;
-                        h = true;
+                        if (ii == 1)
+                        {
+                            last.next = k;
+                            ar[v1.num].H = last;
+                            h = true;
+                        }
+                        else
+                        {
+                            prev.next = last;
+                            last.next = k;
+                            h = true;
+                        }
                        
                     }
                     else
                     {
+                        prev = k;
                         k = k.next;
+                        ++ii;
                     }
+                }
+                if ((k == null) && (!h))
+                {
+                    prev.next = last;
                 }
                 return ar[v1.num].H;
             } 
         }
         private Node add(V v)
-        {
+        { int ii=1;
             bool h = false;
             Node last = new Node();
             Node k = new Node();
+            Node prev = new Node();
             last.num = v.num;
+            last.label = null;
+            last.w = 0;
+            last.next = null;
             if (Nv == null) return last;
             else
             {
@@ -147,37 +170,65 @@ namespace grafi
                 {
                     if (k.num > last.num)
                     {
-                        last.next = k;
-                        h = true;
-                       
+                        if (ii == 1)
+                        {
+                            last.next = k;
+                            ar[v.num].H.next = last;
+                            h = true;
+                        }
+                        else
+                        {
+                            prev.next = last;
+                            last.next = k;
+                            h = true;
+                        }
+
                     }
                     else
                     {
+                        prev = k;
                         k = k.next;
+                        ++ii;
                     }
                 }
+                     if ((k == null) && (!h))
+                {
+                    prev.next = last;
+                }
+                
                 return Nv;
             } 
         }
         private Node delete(V v)
         {
+            int ii = 1;
             Node k = Nv;
-            Node tmp = new Node();
+            Node tmp = null;
             while ((v.num != Nv.num)&&(k!=null))
             {
                 tmp = k;
                 k = k.next;
+                ++ii;
             }
             if (k != null)
             {
-                tmp.next = k.next;
-                return Nv;
+                if (ii == 1)
+                {
+                    Nv = k.next;
+                    return Nv;
+                }
+                else
+                {
+                    tmp.next = k.next;
+                    return Nv;
+                }
             }
             return Nv;
         }
         public void VINSERT(V v,Showmessage method)
         {
             ar[v.num].v.label = v.label;
+            ar[v.num].v.num = v.num;
             Nv = add(v);
             method("Вершина добавлена");
         }
@@ -234,7 +285,7 @@ namespace grafi
         }
         public void VLABEL(V v,Showmessage method)
         {
-            if (v.num != 0)
+            if (ar[v.num].v.num != 0)
             {
                 method(string.Format(ar[v.num].v.label));
                 return;
@@ -283,11 +334,12 @@ namespace grafi
             Nv = delete(v);
            while(k!=null)
             {
-                V v1 = new V();
+                V v1 = new V() { num = 0, label = null };
                 v1.num = k.num;
                 XDELETE(v1, v);
                 k = k.next;
             }
+           method("Вершина удалена");
         }
         public void SLabel(int i, V v, Showmessage method)
         { Node k=ar[v.num].H;
@@ -306,11 +358,11 @@ namespace grafi
             }
             method(string.Format("Вес {0}-смежной вершине дуги: {1}", i, k.w));
         }
-        public void Worshall(Showmessage method)
+        public void Worshall(Showarray method)
         {
             Node tmp = Nv;
             Node k = Nv;
-            int i = 0; int ii = 0;
+            i = 0; int ii = 0;
             int jj = 0;
             while (k != null)
             {
@@ -339,11 +391,11 @@ namespace grafi
                 tmp = tmp.next;
                 ++ii;
             }
-            for (int k1 = 0; k1 <= i; ++k1)
+            for (int k1 = 0; k1 < i; ++k1)
             {
-                for (int i1 = 0; i1 <= i; ++i1)
+                for (int i1 = 0; i1 < i; ++i1)
                 {
-                    for (int j1 = 0; j1 <= i; ++j1)
+                    for (int j1 = 0; j1 < i; ++j1)
                     {
                         if (A[j1, i1] == false)
                         {
@@ -352,7 +404,7 @@ namespace grafi
                     }
                 }
             }
-
+            method(A);
         }
         }
     }
